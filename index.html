@@ -84,7 +84,7 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         .balance {
             font-size: 2.4em;
@@ -92,36 +92,6 @@
             color: white;
             letter-spacing: 0.5px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* Category Filter Buttons */
-        .category-filter {
-            max-width: 1000px;
-            margin: 0 auto 25px auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .cat-btn {
-            padding: 8px 16px;
-            border-radius: 20px;
-            border: 1px solid #e4e6eb;
-            background: white;
-            color: #4b4f56;
-            font-weight: 600;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .cat-btn:hover {
-            background: #e4e6eb;
-        }
-        .cat-btn.active {
-            background: #1c1e21;
-            color: white;
-            border-color: #1c1e21;
         }
 
         /* Grid Layout */
@@ -318,8 +288,6 @@
     <div class="balance" id="balance">1 976 000 000 000 Ft</div>
 </div>
 
-<div class="category-filter" id="category-filter"></div>
-
 <div class="grid" id="items-grid"></div>
 
 <div class="receipt-container" id="receipt-container" style="display: none;">
@@ -333,7 +301,6 @@
     const INITIAL_MONEY_HUF = 1976000000000;
     let totalMoney = INITIAL_MONEY_HUF;
     let currentLang = 'hu';
-    let currentCategory = 'all';
 
     const currencies = {
         hu: { code: 'HUF', symbol: 'Ft', rate: 1, locale: 'hu-HU' },
@@ -352,8 +319,7 @@
             sell: "Elad",
             receiptTitle: "🧾 Bevásárlólista / Számla",
             totalSpent: "Összesen elköltve: ",
-            resetBtn: "Mindent alaphelyzetbe",
-            categories: { all: "Összes", zuglo: "Zugló", capital: "Főváros", gov: "Kormány", waste: "Pazarlás" }
+            resetBtn: "Mindent alaphelyzetbe"
         },
         en: {
             title: "Spend Mészáros Lőrinc's Money",
@@ -362,8 +328,7 @@
             sell: "Sell",
             receiptTitle: "🧾 Shopping Receipt",
             totalSpent: "Total Spent: ",
-            resetBtn: "Reset All",
-            categories: { all: "All", zuglo: "Zugló", capital: "Capital", gov: "Gov", waste: "Waste" }
+            resetBtn: "Reset All"
         },
         fr: {
             title: "Dépensez la fortune de Lőrinc Mészáros !",
@@ -372,8 +337,7 @@
             sell: "Vendre",
             receiptTitle: "🧾 Reçu d'achat",
             totalSpent: "Total dépensé : ",
-            resetBtn: "Tout réinitialiser",
-            categories: { all: "Tous", zuglo: "Zugló", capital: "Capitale", gov: "Gouvernement", waste: "Gaspillage" }
+            resetBtn: "Tout réinitialiser"
         },
         es: {
             title: "¡Gasta el dinero de Lőrinc Mészáros!",
@@ -382,8 +346,7 @@
             sell: "Vender",
             receiptTitle: "🧾 Recibo de Compra",
             totalSpent: "Total Gastado: ",
-            resetBtn: "Restablecer Todo",
-            categories: { all: "Todos", zuglo: "Zugló", capital: "Capital", gov: "Gobierno", waste: "Gasto" }
+            resetBtn: "Restablecer Todo"
         },
         it: {
             title: "Spendi i soldi di Lőrinc Mészáros!",
@@ -392,8 +355,7 @@
             sell: "Vendi",
             receiptTitle: "🧾 Scontrino",
             totalSpent: "Totale Speso: ",
-            resetBtn: "Ripristina Tutto",
-            categories: { all: "Tutti", zuglo: "Zugló", capital: "Capitale", gov: "Governo", waste: "Spreco" }
+            resetBtn: "Ripristina Tutto"
         },
         de: {
             title: "Gib das Geld von Lőrinc Mészáros aus!",
@@ -402,176 +364,147 @@
             sell: "Verkaufen",
             receiptTitle: "🧾 Einkaufszettel / Quittung",
             totalSpent: "Insgesamt ausgegeben: ",
-            resetBtn: "Alles zurücksetzen",
-            categories: { all: "Alle", zuglo: "Zugló", capital: "Hauptstadt", gov: "Regierung", waste: "Verschwendung" }
+            resetBtn: "Alles zurücksetzen"
         }
     };
 
     const items = [
         { 
-            category: "waste",
             price: 5000, 
             count: 0,
             name: { hu: "Gyermekjátékok", en: "Children's toys", fr: "Jouets pour enfants", es: "Juguetes para niños", it: "Giocattoli per bambini", de: "Kinderspielzeug" }
         },
         { 
-            category: "waste",
             price: 500, 
             count: 0,
             name: { hu: "Iskolai kréta", en: "School chalk", fr: "Craie scolaire", es: "Tiza escolar", it: "Gesso scolastico", de: "Schulkreide" }
         },
         { 
-            category: "capital",
             price: 5000, 
             count: 0,
             name: { hu: "MÁV késési kár", en: "Train delay refund", fr: "Remboursement retard train", es: "Reembolso por retraso", it: "Rimborso treno", de: "Zugverspätung Rückzahlung" }
         },
         { 
-            category: "zuglo",
             price: 5000, 
             count: 0,
             name: { hu: "Piaci asztal bérlés", en: "Market stall rental", fr: "Location d'étal", es: "Puesto de mercado", it: "Banco mercato", de: "Marktstand-Miete" }
         },
         { 
-            category: "waste",
             price: 25000, 
             count: 0,
             name: { hu: "Szerelői kiszállás", en: "Plumber call-out", fr: "Déplacement plombier", es: "Visita de fontanero", it: "Uscita idraulico", de: "Klempner-Anfahrt" }
         },
         { 
-            category: "waste",
             price: 500000, 
             count: 0,
             name: { hu: "Óriásplakát", en: "Billboard", fr: "Panneau publicitaire", es: "Valla publicitaria", it: "Cartellone", de: "Plakat" }
         },
         { 
-            category: "capital",
             price: 500000, 
             count: 0,
             name: { hu: "Sajtófal", en: "Press wall", fr: "Fond de presse", es: "Muro de prensa", it: "Sfondo stampa", de: "Pressewand" }
         },
         { 
-            category: "gov",
             price: 600000, 
             count: 0,
             name: { hu: "Titkosított telefon", en: "Secure phone", fr: "Téléphone sécurisé", es: "Teléfono seguro", it: "Telefono sicuro", de: "Sicheres Telefon" }
         },
         { 
-            category: "gov",
             price: 1300000, 
             count: 0,
             name: { hu: "Aréna szék", en: "Arena seat", fr: "Siège d'arène", es: "Asiento de estadio", it: "Sedile stadio", de: "Stadion-Sitz" }
         },
         { 
-            category: "capital",
             price: 1500000, 
             count: 0,
             name: { hu: "Parkolóhely (1 év)", en: "Parking space (1 yr)", fr: "Place de parking (1 an)", es: "Plaza de parking (1 año)", it: "Parcheggio (1 an)", de: "Parkplatz (1 Jr)" }
         },
         { 
-            category: "zuglo",
             price: 2500000, 
             count: 0,
             name: { hu: "Zuglói iroda (1 m²)", en: "Zugló office (1 m²)", fr: "Bureau Zugló (1 m²)", es: "Oficina Zugló (1 m²)", it: "Ufficio Zugló (1 m²)", de: "Zugló Büro (1 m²)" }
         },
         { 
-            category: "gov",
             price: 5000000, 
             count: 0,
             name: { hu: "Kettős kereszt", en: "Giant cross", fr: "Grande croix", es: "Cruz gigante", it: "Croce gigante", de: "Riesenkreuz" }
         },
         { 
-            category: "gov",
             price: 10000000, 
             count: 0,
             name: { hu: "Déli Körvasút (1 m)", en: "Southern rail (1 m)", fr: "Rail du Sud (1 m)", es: "Ferrocarril del sur (1 m)", it: "Ferrovia del sud (1 m)", de: "Südbahn (1 m)" }
         },
         { 
-            category: "gov",
             price: 15000000, 
             count: 0,
             name: { hu: "Vonat klíma", en: "Train AC", fr: "Clim de train", es: "Aire acondicionado de tren", it: "Aria condizionata treno", de: "Zug-Klimaanlage" }
         },
         { 
-            category: "gov",
             price: 20000000, 
             count: 0,
             name: { hu: "Lélegeztetőgép", en: "Ventilator", fr: "Ventilateur", es: "Respirador", it: "Ventilatore", de: "Beatmungsgerät" }
         },
         { 
-            category: "gov",
             price: 24000000, 
             count: 0,
             name: { hu: "Kuratóriumi tagság", en: "Board membership", fr: "Siège au conseil", es: "Puesto en consejo", it: "Membro consiglio", de: "Stiftungsrat-Sitz" }
         },
         { 
-            category: "waste",
             price: 60000000, 
             count: 0,
             name: { hu: "Lombkoronasétány", en: "Tree walkway", fr: "Passerelle des cimes", es: "Paseo de los árboles", it: "Passerella sugli alberi", de: "Baumwipfelpfad" }
         },
         { 
-            category: "capital",
             price: 300000000, 
             count: 0,
             name: { hu: "Lánchíd (1 méter)", en: "Chain Bridge (1 m)", fr: "Pont des Chaînes (1 m)", es: "Puente de Cadenas (1 m)", it: "Ponte delle Catene (1 m)", de: "Kettenbrücke (1 m)" }
         },
         { 
-            category: "waste",
             price: 12500000000, 
             count: 0,
             name: { hu: "Nemzeti Konzultáció", en: "National Consultation", fr: "Consultation Nationale", es: "Consulta Nacional", it: "Consultazione Nazionale", de: "Nationale Konsultation" }
         },
         { 
-            category: "gov",
             price: 15000000000, 
             count: 0,
             name: { hu: "Aug 20 Tűzijáték", en: "Aug 20 Fireworks", fr: "Feux d'artifice du 20 août", es: "Fuegos artificiales 20 Ago", it: "Fuochi 20 agosto", de: "Feuerwerk 20. Aug" }
         },
         { 
-            category: "gov",
             price: 18000000000, 
             count: 0,
             name: { hu: "Szuperyacht", en: "Superyacht", fr: "Superyacht", es: "Superyate", it: "Superyacht", de: "Superjacht" }
         },
         { 
-            category: "gov",
             price: 2500000000, 
             count: 0,
             name: { hu: "Bp-Belgrád vasút (1 km)", en: "Bp-Belgrade rail (1 km)", fr: "Ligne Bp-Belgrade (1 km)", es: "Línea Bp-Belgrado (1 km)", it: "Linea Bp-Belgrado (1 km)", de: "Bp-Belgrad Bahn (1 km)" }
         },
         { 
-            category: "gov",
             price: 5000000000, 
             count: 0,
             name: { hu: "Mini-Dubaj terület (1 ha)", en: "Mini-Dubai land (1 ha)", fr: "Terrain Mini-Dubaï (1 ha)", es: "Terreno Mini-Dubái (1 ha)", it: "Terreno Mini-Dubai (1 ha)", de: "Mini-Dubai Land (1 ha)" }
         },
         { 
-            category: "gov",
             price: 50000000000, 
             count: 0,
             name: { hu: "Autópálya koncesszió", en: "Highway concession", fr: "Concession autoroute", es: "Concesión autopista", it: "Concessione autostrada", de: "Autobahnkonzession" }
         },
         { 
-            category: "capital",
             price: 100000000000, 
             count: 0,
             name: { hu: "Budapesti Városháza", en: "Budapest City Hall", fr: "Hôtel de ville de Bp", es: "Ayuntamiento de Bp", it: "Municipio di Bp", de: "Rathaus Budapest" }
         },
         { 
-            category: "zuglo",
             price: 275000000000, 
             count: 0,
             name: { hu: "Zuglói Városközpont", en: "Zugló City Center", fr: "Centre-ville de Zugló", es: "Centro Urbano Zugló", it: "Centro Città Zugló", de: "Stadtzentrum Zugló" }
         },
         { 
-            category: "gov",
             price: 540000000000, 
             count: 0,
             name: { hu: "Fudan Egyetem", en: "Fudan University", fr: "Université Fudan", es: "Universidad Fudan", it: "Università Fudan", de: "Fudan Universität" }
         },
         { 
-            category: "gov",
             price: 700000000000, 
             count: 0,
             name: { hu: "Vodafone/Yettel részvény", en: "Telecom shares", fr: "Actions télécoms", es: "Acciones de telecom", it: "Azioni telecom", de: "Telekom-Aktien" }
@@ -598,26 +531,7 @@
         document.getElementById('receipt-title').innerText = t.receiptTitle;
         document.getElementById('reset-btn').innerText = t.resetBtn;
         
-        renderCategoryFilters();
         update();
-    }
-
-    function renderCategoryFilters() {
-        const filterContainer = document.getElementById('category-filter');
-        filterContainer.innerHTML = '';
-        const cats = translations[currentLang].categories;
-
-        Object.keys(cats).forEach(catKey => {
-            const btn = document.createElement('button');
-            btn.className = `cat-btn ${currentCategory === catKey ? 'active' : ''}`;
-            btn.innerText = cats[catKey];
-            btn.onclick = () => {
-                currentCategory = catKey;
-                renderCategoryFilters();
-                renderItems();
-            };
-            filterContainer.appendChild(btn);
-        });
     }
 
     function renderItems() {
@@ -625,12 +539,7 @@
         grid.innerHTML = '';
         const t = translations[currentLang];
 
-        const filteredItems = currentCategory === 'all' 
-            ? items 
-            : items.filter(item => item.category === currentCategory);
-
-        filteredItems.forEach((item) => {
-            const index = items.indexOf(item);
+        items.forEach((item, index) => {
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
@@ -771,7 +680,6 @@
         renderReceipt();
     }
 
-    renderCategoryFilters();
     renderItems();
 </script>
 
