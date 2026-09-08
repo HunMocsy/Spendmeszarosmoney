@@ -203,6 +203,7 @@
         <select id="languageSelect" onchange="changeLanguage(this.value)">
             <option value="hu">🇭🇺 Magyar</option>
             <option value="en">🇬🇧 English</option>
+            <option value="fr">🇫🇷 Français</option>
             <option value="es">🇪🇸 Español</option>
             <option value="it">🇮🇹 Italiano</option>
             <option value="de">🇩🇪 Deutsch</option>
@@ -246,6 +247,15 @@
             totalSpent: "Total Spent: ",
             resetBtn: "Reset All"
         },
+        fr: {
+            title: "Dépensez la fortune de Lőrinc Mészáros !",
+            subtitle: "Fortune totale : ~5,2 Milliards USD (1 950 000 000 000 HUF)",
+            buy: "Acheter",
+            sell: "Vendre",
+            receiptTitle: "🧾 Reçu d'achat",
+            totalSpent: "Total dépensé : ",
+            resetBtn: "Tout réinitialiser"
+        },
         es: {
             title: "¡Gasta el dinero de Lőrinc Mészáros!",
             subtitle: "Patrimonio total: ~5,2 Mil Millones USD (1.950.000.000.000 HUF)",
@@ -280,61 +290,61 @@
             price: 80, 
             image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&auto=format&fit=crop&q=80", 
             count: 0,
-            name: { hu: "Szupermarketes K kifli", en: "Supermarket Croissant", es: "Cruasán de Supermercado", it: "Cornetto del Supermercato", de: "Supermarkt-Hörnchen" }
+            name: { hu: "Szupermarketes K kifli", en: "Supermarket Croissant", fr: "Croissant de supermarché", es: "Cruasán de Supermercado", it: "Cornetto del Supermercato", de: "Supermarkt-Hörnchen" }
         },
         { 
             price: 2000, 
             image: "https://likebalaton.hu/wp-content/uploads/2019/06/sajtos-tejfolos-langos-balaton.jpg", 
             count: 0,
-            name: { hu: "Balatoni Lángos", en: "Lake Balaton Lángos", es: "Lángos del Lago Balatón", it: "Lángos del Lago Balaton", de: "Plattensee Lángos" }
+            name: { hu: "Balatoni Lángos", en: "Lake Balaton Lángos", fr: "Lángos du lac Balaton", es: "Lángos del Lago Balatón", it: "Lángos del Lago Balaton", de: "Plattensee Lángos" }
         },
         { 
             price: 25000, 
             image: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=400&auto=format&fit=crop&q=80", 
             count: 0,
-            name: { hu: "Gázszerelő óradíj", en: "Plumber Hourly Rate", es: "Tarifa por hora de Fontanero", it: "Tariffa oraria Idraulico", de: "Stundensatz Klempner" }
+            name: { hu: "Gázszerelő óradíj", en: "Plumber Hourly Rate", fr: "Tarif horaire du plombier", es: "Tarifa por hora de Fontanero", it: "Tariffa oraria Idraulico", de: "Stundensatz Klempner" }
         },
         { 
             price: 108000, 
             image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&auto=format&fit=crop&q=80", 
             count: 0,
-            name: { hu: "1 Éves BKK bérlet", en: "1-Year Transit Pass", es: "Abono Anual de Transporte", it: "Abbonamento Annuale Bus", de: "1-Jahres-ÖPNV-Ticket" }
+            name: { hu: "1 Éves BKK bérlet", en: "1-Year Transit Pass", fr: "Abonnement de transport (1 an)", es: "Abono Anual de Transporte", it: "Abbonamento Annuale Bus", de: "1-Jahres-ÖPNV-Ticket" }
         },
         { 
             price: 600000, 
             image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&auto=format&fit=crop&q=80", 
             count: 0,
-            name: { hu: "iPhone 16 Pro Max", en: "iPhone 16 Pro Max", es: "iPhone 16 Pro Max", it: "iPhone 16 Pro Max", de: "iPhone 16 Pro Max" }
+            name: { hu: "iPhone 16 Pro Max", en: "iPhone 16 Pro Max", fr: "iPhone 16 Pro Max", es: "iPhone 16 Pro Max", it: "iPhone 16 Pro Max", de: "iPhone 16 Pro Max" }
         },
         { 
             price: 15000, 
             image: "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=400&auto=format&fit=crop&q=80", 
             count: 0,
-            name: { hu: "Pancho Aréna gyepszőnyeg (m²)", en: "Stadium Turf (m²)", es: "Césped de Estadio (m²)", it: "Erba da Stadio (m²)", de: "Stadionrasen (m²)" }
+            name: { hu: "Pancho Aréna gyepszőnyeg (m²)", en: "Stadium Turf (m²)", fr: "Pelouse de stade (m²)", es: "Césped de Estadio (m²)", it: "Erba da Stadio (m²)", de: "Stadionrasen (m²)" }
         },
         { 
             price: 150000000, 
             image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&auto=format&fit=crop&q=80", 
             count: 0,
-            name: { hu: "Luxus lakás Budapesten", en: "Luxury Apartment in Bp", es: "Apartamento de Lujo", it: "Appartamento di Lusso", de: "Luxuswohnung Budapest" }
+            name: { hu: "Luxus lakás Budapesten", en: "Luxury Apartment in Bp", fr: "Appartement de luxe à Bp", es: "Apartamento de Lujo", it: "Appartamento di Lusso", de: "Luxuswohnung Budapest" }
         },
         { 
             price: 800000000, 
             image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=400&auto=format&fit=crop&q=80", 
             count: 0,
-            name: { hu: "Kisvasút szerelvény", en: "Narrow-gauge Train", es: "Tren de Vía Estrecha", it: "Treno a Scartamento Ridotto", de: "Schmalspurbahn-Zug" }
+            name: { hu: "Kisvasút szerelvény", en: "Narrow-gauge Train", fr: "Train à voie étroite", es: "Tren de Vía Estrecha", it: "Treno a Scartamento Ridotto", de: "Schmalspurbahn-Zug" }
         },
         { 
             price: 18000000000, 
             image: "https://kep.cdn.indexvas.hu/1/0/1985/19857/198573/19857367_80ff5bffe0beda9d134343dec5c5d50d_wm.jpg", 
             count: 0,
-            name: { hu: "Lady AMR szuperyacht", en: "Lady AMR Superyacht", es: "Superyate Lady AMR", it: "Superyacht Lady AMR", de: "Lady AMR Superjacht" }
+            name: { hu: "Lady AMR szuperyacht", en: "Lady AMR Superyacht", fr: "Superyacht Lady AMR", es: "Superyate Lady AMR", it: "Superyacht Lady AMR", de: "Lady AMR Superjacht" }
         },
         { 
             price: 50000000000, 
             image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=400&auto=format&fit=crop&q=80", 
             count: 0,
-            name: { hu: "Autópálya koncesszió (1 év)", en: "Highway Concession (1 yr)", es: "Concesión de Autopista (1 año)", it: "Concessione Autostradale (1 an)", de: "Autobahnkonzession (1 Jr)" }
+            name: { hu: "Autópálya koncesszió (1 év)", en: "Highway Concession (1 yr)", fr: "Concession d'autoroute (1 an)", es: "Concesión de Autopista (1 año)", it: "Concessione Autostradale (1 an)", de: "Autobahnkonzession (1 Jr)" }
         }
     ];
 
