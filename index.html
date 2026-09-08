@@ -326,7 +326,7 @@
 </div>
 
 <header>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/M%C3%A9sz%C3%A1ros_L%C5%91rinc_2023.jpg/440px-M%C3%A9sz%C3%A1ros_L%C5%91rinc_2023.jpg" class="profile-img" alt="Mészáros Lőrinc">
+    <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&auto=format&fit=crop&q=80" class="profile-img" alt="Mészáros Lőrinc">
     <h1 id="page-title">Spend Mészáros Lőrinc's Money</h1>
     <div class="usd-subtitle" id="page-subtitle">Teljes keret: ~5,2 Milliárd USD (1 950 000 000 000 Ft)</div>
 </header>
@@ -347,27 +347,30 @@
 </div>
 
 <script>
-    const INITIAL_MONEY = 1950000000000;
-    let totalMoney = INITIAL_MONEY;
+    const INITIAL_MONEY_HUF = 1950000000000;
+    let totalMoney = INITIAL_MONEY_HUF;
     let currentLang = 'hu';
     let currentCategory = 'all';
 
+    const currencies = {
+        hu: { code: 'HUF', symbol: 'Ft', rate: 1, locale: 'hu-HU' },
+        en: { code: 'USD', symbol: '$', rate: 0.0026, locale: 'en-US' },
+        fr: { code: 'EUR', symbol: '€', rate: 0.0024, locale: 'fr-FR' },
+        es: { code: 'EUR', symbol: '€', rate: 0.0024, locale: 'es-ES' },
+        it: { code: 'EUR', symbol: '€', rate: 0.0024, locale: 'it-IT' },
+        de: { code: 'EUR', symbol: '€', rate: 0.0024, locale: 'de-DE' }
+    };
+
     const translations = {
         hu: {
-            title: "Spend Mészáros Lőrinc's Money",
+            title: "Költsd el Mészáros Lőrinc vagyonát!",
             subtitle: "Teljes keret: ~5,2 Milliárd USD (1 950 000 000 000 Ft)",
             buy: "Vesz",
             sell: "Elad",
             receiptTitle: "🧾 Bevásárlólista / Számla",
             totalSpent: "Összesen elköltve: ",
             resetBtn: "Mindent alaphelyzetbe",
-            categories: {
-                all: "Összes",
-                zuglo: "Zugló",
-                capital: "Főváros",
-                gov: "Kormány",
-                waste: "Pazarlás"
-            }
+            categories: { all: "Összes", zuglo: "Zugló", capital: "Főváros", gov: "Kormány", waste: "Pazarlás" }
         },
         en: {
             title: "Spend Mészáros Lőrinc's Money",
@@ -377,13 +380,7 @@
             receiptTitle: "🧾 Shopping Receipt",
             totalSpent: "Total Spent: ",
             resetBtn: "Reset All",
-            categories: {
-                all: "All",
-                zuglo: "Zugló",
-                capital: "Capital",
-                gov: "Gov",
-                waste: "Waste"
-            }
+            categories: { all: "All", zuglo: "Zugló", capital: "Capital", gov: "Gov", waste: "Waste" }
         },
         fr: {
             title: "Dépensez la fortune de Lőrinc Mészáros !",
@@ -393,13 +390,7 @@
             receiptTitle: "🧾 Reçu d'achat",
             totalSpent: "Total dépensé : ",
             resetBtn: "Tout réinitialiser",
-            categories: {
-                all: "Tous",
-                zuglo: "Zugló",
-                capital: "Capitale",
-                gov: "Gouvernement",
-                waste: "Gaspillage"
-            }
+            categories: { all: "Tous", zuglo: "Zugló", capital: "Capitale", gov: "Gouvernement", waste: "Gaspillage" }
         },
         es: {
             title: "¡Gasta el dinero de Lőrinc Mészáros!",
@@ -409,13 +400,7 @@
             receiptTitle: "🧾 Recibo de Compra",
             totalSpent: "Total Gastado: ",
             resetBtn: "Restablecer Todo",
-            categories: {
-                all: "Todos",
-                zuglo: "Zugló",
-                capital: "Capital",
-                gov: "Gobierno",
-                waste: "Gasto"
-            }
+            categories: { all: "Todos", zuglo: "Zugló", capital: "Capital", gov: "Gobierno", waste: "Gasto" }
         },
         it: {
             title: "Spendi i soldi di Lőrinc Mészáros!",
@@ -425,13 +410,7 @@
             receiptTitle: "🧾 Scontrino",
             totalSpent: "Totale Speso: ",
             resetBtn: "Ripristina Tutto",
-            categories: {
-                all: "Tutti",
-                zuglo: "Zugló",
-                capital: "Capitale",
-                gov: "Governo",
-                waste: "Spreco"
-            }
+            categories: { all: "Tutti", zuglo: "Zugló", capital: "Capitale", gov: "Governo", waste: "Spreco" }
         },
         de: {
             title: "Gib das Geld von Lőrinc Mészáros aus!",
@@ -441,18 +420,11 @@
             receiptTitle: "🧾 Einkaufszettel / Quittung",
             totalSpent: "Insgesamt ausgegeben: ",
             resetBtn: "Alles zurücksetzen",
-            categories: {
-                all: "Alle",
-                zuglo: "Zugló",
-                capital: "Hauptstadt",
-                gov: "Regierung",
-                waste: "Verschwendung"
-            }
+            categories: { all: "Alle", zuglo: "Zugló", capital: "Hauptstadt", gov: "Regierung", waste: "Verschwendung" }
         }
     };
 
     const items = [
-        // Egyszerűsített nevek
         { 
             category: "waste",
             price: 300, 
@@ -653,8 +625,10 @@
 
     let holdTimeout, holdInterval;
 
-    function formatMoney(amount) {
-        return amount.toLocaleString('hu-HU') + " Ft";
+    function formatMoney(amountHuf) {
+        const curr = currencies[currentLang];
+        const converted = amountHuf * curr.rate;
+        return converted.toLocaleString(curr.locale, { maximumFractionDigits: 0 }) + " " + curr.symbol;
     }
 
     function changeLanguage(lang) {
@@ -831,7 +805,7 @@
 
     function resetAll() {
         stopHold();
-        totalMoney = INITIAL_MONEY;
+        totalMoney = INITIAL_MONEY_HUF;
         items.forEach(item => item.count = 0);
         update();
     }
