@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Költsd el Mészáros Lőrinc vagyonát!</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f6f9;
@@ -15,17 +18,40 @@
         header {
             background-color: #1e3c72;
             color: white;
-            padding: 25px 10px;
+            padding: 20px 15px;
             text-align: center;
             position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
-        h1 { margin: 0 0 5px 0; font-size: 1.8em; }
-        .usd-subtitle { font-size: 0.9em; opacity: 0.85; margin-bottom: 12px; }
+        .lang-selector {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+        .lang-selector select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            background: white;
+            color: #1e3c72;
+            font-size: 0.9em;
+            outline: none;
+        }
+        h1 { 
+            margin: 10px 0 5px 0; 
+            font-size: 1.8em; 
+        }
+        .usd-subtitle { 
+            font-size: 0.9em; 
+            opacity: 0.85; 
+            margin-bottom: 12px; 
+        }
         .balance {
-            font-size: 2.2em;
+            font-size: 2em;
             font-weight: bold;
             color: #2ecc71;
             background: rgba(0,0,0,0.25);
@@ -44,16 +70,41 @@
         .card {
             background: white;
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
-        .icon { font-size: 3em; margin-bottom: 10px; }
-        .title { font-size: 1.1em; font-weight: bold; margin-bottom: 5px; }
-        .price { color: #e74c3c; font-weight: bold; margin-bottom: 15px; }
+        .img-container {
+            width: 100%;
+            height: 160px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #eee;
+        }
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .title { 
+            font-size: 1.1em; 
+            font-weight: bold; 
+            margin-bottom: 5px; 
+            min-height: 44px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        .price { 
+            color: #e74c3c; 
+            font-weight: bold; 
+            margin-bottom: 15px; 
+            font-size: 1.05em;
+        }
         .controls {
             display: flex;
             justify-content: center;
@@ -69,6 +120,7 @@
             font-weight: bold;
             transition: 0.1s;
             user-select: none;
+            -webkit-user-select: none;
         }
         .buy { background-color: #2ecc71; color: white; }
         .buy:hover { background-color: #27ae60; }
@@ -79,11 +131,12 @@
         .count-input {
             font-size: 1.1em;
             font-weight: bold;
-            width: 60px;
+            width: 65px;
             text-align: center;
             border: 1px solid #ccc;
             border-radius: 6px;
             padding: 6px 0;
+            outline: none;
         }
         .count-input::-webkit-inner-spin-button, 
         .count-input::-webkit-outer-spin-button { 
@@ -130,40 +183,159 @@
             margin-top: 15px;
         }
         .reset-btn:hover { background-color: #95a5a6; }
+
+        @media (max-width: 600px) {
+            .lang-selector {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 10px;
+            }
+            h1 { font-size: 1.4em; }
+            .balance { font-size: 1.5em; }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Költsd el Mészáros Lőrinc vagyonát!</h1>
-    <div class="usd-subtitle">Teljes keret: ~5,2 Milliárd USD (1 950 000 000 000 Ft)</div>
+    <div class="lang-selector">
+        <select id="languageSelect" onchange="changeLanguage(this.value)">
+            <option value="hu">🇭🇺 Magyar</option>
+            <option value="en">🇬🇧 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="it">🇮🇹 Italiano</option>
+            <option value="de">🇩🇪 Deutsch</option>
+        </select>
+    </div>
+    <h1 id="page-title">Költsd el Mészáros Lőrinc vagyonát!</h1>
+    <div class="usd-subtitle" id="page-subtitle">Teljes keret: ~5,2 Milliárd USD (1 950 000 000 000 Ft)</div>
     <div class="balance" id="balance">1 950 000 000 000 Ft</div>
 </header>
 
 <div class="grid" id="items-grid"></div>
 
 <div class="receipt-container" id="receipt-container" style="display: none;">
-    <h2>🧾 Bevásárlólista / Számla</h2>
+    <h2 id="receipt-title">🧾 Bevásárlólista / Számla</h2>
     <ul class="receipt-list" id="receipt-list"></ul>
     <div class="receipt-total" id="receipt-total"></div>
-    <button class="reset-btn" onclick="resetAll()">Mindent alaphelyzetbe</button>
+    <button class="reset-btn" id="reset-btn" onclick="resetAll()">Mindent alaphelyzetbe</button>
 </div>
 
 <script>
     const INITIAL_MONEY = 1950000000000;
     let totalMoney = INITIAL_MONEY;
+    let currentLang = 'hu';
+
+    const translations = {
+        hu: {
+            title: "Költsd el Mészáros Lőrinc vagyonát!",
+            subtitle: "Teljes keret: ~5,2 Milliárd USD (1 950 000 000 000 Ft)",
+            buy: "Vesz",
+            sell: "Elad",
+            receiptTitle: "🧾 Bevásárlólista / Számla",
+            totalSpent: "Összesen elköltve: ",
+            resetBtn: "Mindent alaphelyzetbe"
+        },
+        en: {
+            title: "Spend Lőrinc Mészáros's Money!",
+            subtitle: "Total Net Worth: ~5.2 Billion USD (1,950,000,000,000 HUF)",
+            buy: "Buy",
+            sell: "Sell",
+            receiptTitle: "🧾 Shopping Receipt",
+            totalSpent: "Total Spent: ",
+            resetBtn: "Reset All"
+        },
+        es: {
+            title: "¡Gasta el dinero de Lőrinc Mészáros!",
+            subtitle: "Patrimonio total: ~5,2 Mil Millones USD (1.950.000.000.000 HUF)",
+            buy: "Comprar",
+            sell: "Vender",
+            receiptTitle: "🧾 Recibo de Compra",
+            totalSpent: "Total Gastado: ",
+            resetBtn: "Restablecer Todo"
+        },
+        it: {
+            title: "Spendi i soldi di Lőrinc Mészáros!",
+            subtitle: "Patrimonio totale: ~5,2 Miliardi di USD (1.950.000.000.000 HUF)",
+            buy: "Acquista",
+            sell: "Vendi",
+            receiptTitle: "🧾 Scontrino",
+            totalSpent: "Totale Speso: ",
+            resetBtn: "Ripristina Tutto"
+        },
+        de: {
+            title: "Gib das Geld von Lőrinc Mészáros aus!",
+            subtitle: "Gesamtvermögen: ~5,2 Milliarden USD (1.950.000.000.000 HUF)",
+            buy: "Kaufen",
+            sell: "Verkaufen",
+            receiptTitle: "🧾 Einkaufszettel / Quittung",
+            totalSpent: "Insgesamt ausgegeben: ",
+            resetBtn: "Alles zurücksetzen"
+        }
+    };
 
     const items = [
-        { name: "Szupermarketes K kifli", price: 80, icon: "🥐", count: 0 },
-        { name: "Lángos a Balatonon", price: 2000, icon: "🥖", count: 0 },
-        { name: "Gázszerelő óradíj", price: 25000, icon: "🔧", count: 0 },
-        { name: "1 Éves BKK bérlet", price: 108000, icon: "🚌", count: 0 },
-        { name: "IPhone 16 Pro Max", price: 600000, icon: "📱", count: 0 },
-        { name: "Pancho Aréna gyepszőnyeg (m²)", price: 15000, icon: "⚽", count: 0 },
-        { name: "Luxus lakás Budapesten", price: 150000000, icon: "🏢", count: 0 },
-        { name: "Kisvasút szerelvény", price: 800000000, icon: "🚂", count: 0 },
-        { name: "Balatoni szuperyacht", price: 18000000000, icon: "🛥️", count: 0 },
-        { name: "Autópálya koncesszió (1 év)", price: 50000000000, icon: "🛣️", count: 0 }
+        { 
+            price: 80, 
+            image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&auto=format&fit=crop&q=80", 
+            count: 0,
+            name: { hu: "Szupermarketes K kifli", en: "Supermarket Croissant", es: "Cruasán de Supermercado", it: "Cornetto del Supermercato", de: "Supermarkt-Hörnchen" }
+        },
+        { 
+            price: 2000, 
+            image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&auto=format&fit=crop&q=80", 
+            count: 0,
+            name: { hu: "Balatoni Lángos", en: "Lake Balaton Lángos", es: "Lángos del Lago Balatón", it: "Lángos del Lago Balaton", de: "Plattensee Lángos" }
+        },
+        { 
+            price: 25000, 
+            image: "https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=400&auto=format&fit=crop&q=80", 
+            count: 0,
+            name: { hu: "Gázszerelő óradíj", en: "Plumber Hourly Rate", es: "Tarifa por hora de Fontanero", it: "Tariffa oraria Idraulico", de: "Stundensatz Klempner" }
+        },
+        { 
+            price: 108000, 
+            image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&auto=format&fit=crop&q=80", 
+            count: 0,
+            name: { hu: "1 Éves BKK bérlet", en: "1-Year Transit Pass", es: "Abono Anual de Transporte", it: "Abbonamento Annuale Bus", de: "1-Jahres-ÖPNV-Ticket" }
+        },
+        { 
+            price: 600000, 
+            image: "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&auto=format&fit=crop&q=80", 
+            count: 0,
+            name: { hu: "iPhone 16 Pro Max", en: "iPhone 16 Pro Max", es: "iPhone 16 Pro Max", it: "iPhone 16 Pro Max", de: "iPhone 16 Pro Max" }
+        },
+        { 
+            price: 15000, 
+            image: "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=400&auto=format&fit=crop&q=80", 
+            count: 0,
+            name: { hu: "Pancho Aréna gyepszőnyeg (m²)", en: "Stadium Turf (m²)", es: "Césped de Estadio (m²)", it: "Erba da Stadio (m²)", de: "Stadionrasen (m²)" }
+        },
+        { 
+            price: 150000000, 
+            image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&auto=format&fit=crop&q=80", 
+            count: 0,
+            name: { hu: "Luxus lakás Budapesten", en: "Luxury Apartment in Bp", es: "Apartamento de Lujo", it: "Appartamento di Lusso", de: "Luxuswohnung Budapest" }
+        },
+        { 
+            price: 800000000, 
+            image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=400&auto=format&fit=crop&q=80", 
+            count: 0,
+            name: { hu: "Kisvasút szerelvény", en: "Narrow-gauge Train", es: "Tren de Vía Estrecha", it: "Treno a Scartamento Ridotto", de: "Schmalspurbahn-Zug" }
+        },
+        { 
+            price: 18000000000, 
+            image: "https://images.unsplash.com/photo-1569263979104-865ab7cd8d13?w=400&auto=format&fit=crop&q=80", 
+            count: 0,
+            name: { hu: "Balatoni szuperyacht", en: "Superyacht", es: "Superyate", it: "Superyacht", de: "Superjacht" }
+        },
+        { 
+            price: 50000000000, 
+            image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=400&auto=format&fit=crop&q=80", 
+            count: 0,
+            name: { hu: "Autópálya koncesszió (1 év)", en: "Highway Concession (1 yr)", es: "Concesión de Autopista (1 año)", it: "Concessione Autostradale (1 an)", de: "Autobahnkonzession (1 Jr)" }
+        }
     ];
 
     let holdTimeout, holdInterval;
@@ -172,16 +344,31 @@
         return amount.toLocaleString('hu-HU') + " Ft";
     }
 
+    function changeLanguage(lang) {
+        currentLang = lang;
+        const t = translations[lang];
+        
+        document.getElementById('page-title').innerText = t.title;
+        document.getElementById('page-subtitle').innerText = t.subtitle;
+        document.getElementById('receipt-title').innerText = t.receiptTitle;
+        document.getElementById('reset-btn').innerText = t.resetBtn;
+        
+        update();
+    }
+
     function renderItems() {
         const grid = document.getElementById('items-grid');
         grid.innerHTML = '';
+        const t = translations[currentLang];
 
         items.forEach((item, index) => {
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
-                <div class="icon">${item.icon}</div>
-                <div class="title">${item.name}</div>
+                <div class="img-container">
+                    <img src="${item.image}" class="card-img" alt="${item.name[currentLang]}">
+                </div>
+                <div class="title">${item.name[currentLang]}</div>
                 <div class="price">${formatMoney(item.price)}</div>
                 <div class="controls">
                     <button class="sell" 
@@ -191,7 +378,7 @@
                         onmouseleave="stopHold()"
                         ontouchstart="startHold('sell', ${index})" 
                         ontouchend="stopHold()"
-                        ${item.count === 0 ? 'disabled' : ''}>Elad</button>
+                        ${item.count === 0 ? 'disabled' : ''}>${t.sell}</button>
                     
                     <input type="number" class="count-input" value="${item.count}" min="0" onchange="changeInput(${index}, this.value)">
                     
@@ -202,7 +389,7 @@
                         onmouseleave="stopHold()"
                         ontouchstart="startHold('buy', ${index})" 
                         ontouchend="stopHold()"
-                        ${totalMoney < item.price ? 'disabled' : ''}>Vesz</button>
+                        ${totalMoney < item.price ? 'disabled' : ''}>${t.buy}</button>
                 </div>
             `;
             grid.appendChild(card);
@@ -213,6 +400,7 @@
         const receiptContainer = document.getElementById('receipt-container');
         const receiptList = document.getElementById('receipt-list');
         const receiptTotal = document.getElementById('receipt-total');
+        const t = translations[currentLang];
 
         const purchasedItems = items.filter(item => item.count > 0);
 
@@ -231,13 +419,13 @@
             const li = document.createElement('li');
             li.className = 'receipt-item';
             li.innerHTML = `
-                <span>${item.icon} ${item.name} × ${item.count}</span>
+                <span>${item.name[currentLang]} × ${item.count}</span>
                 <span><b>${formatMoney(itemTotal)}</b></span>
             `;
             receiptList.appendChild(li);
         });
 
-        receiptTotal.innerHTML = `Összesen elköltve: ${formatMoney(totalSpent)}`;
+        receiptTotal.innerHTML = `${t.totalSpent}${formatMoney(totalSpent)}`;
     }
 
     function buyItem(index) {
